@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Головна - Вікторина</title>
+</head>
+<body>
+    <h1>Вікторина</h1>
+    
+    <nav>
+        <a href="index.html">Головна</a> | 
+        <a href="create-quiz.html">Створити вікторину</a>
+    </nav>
+    
+    <h2>Доступні вікторини</h2>
+    
+    <div id="quiz-list">
+        <!-- Тут будуть відображатися збережені вікторини -->
+    </div>
+
+    <script>
+        // Завантажуємо збережені вікторини при завантаженні сторінки
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuizzes();
+        });
+
+        function loadQuizzes() {
+            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+            const quizList = document.getElementById('quiz-list');
+            
+            quizList.innerHTML = '';
+            
+            quizzes.forEach((quiz, index) => {
+                const quizDiv = document.createElement('div');
+                quizDiv.innerHTML = `
+                    <h3>${quiz.name}</h3>
+                    <p>${quiz.description}</p>
+                    <p>Кількість питань: ${quiz.questions.length}</p>
+                    <a href="take-quiz.html?quizId=${index}">Почати вікторину</a>
+                    <button onclick="deleteQuiz(${index})">Видалити</button>
+                    <hr>
+                `;
+                quizList.appendChild(quizDiv);
+            });
+        }
+
+        function deleteQuiz(index) {
+            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+            quizzes.splice(index, 1);
+            localStorage.setItem('quizzes', JSON.stringify(quizzes));
+            loadQuizzes();
+        }
+    </script>
+</body>
+</html>

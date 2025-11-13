@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Проходження вікторини</title>
+</head>
+<body>
+    <h1 id="quiz-title">Вікторина</h1>
+    
+    <nav>
+        <a href="index.html">Головна</a>
+    </nav>
+    
+    <form id="quiz-form">
+        <div id="questions-container">
+            <!-- Тут будуть відображатися питання -->
+        </div>
+        
+        <button type="submit">Завершити вікторину</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const quizId = urlParams.get('quizId');
+            
+            if (quizId === null) {
+                alert('Вікторину не знайдено!');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+            const quiz = quizzes[quizId];
+
+            if (!quiz) {
+                alert('Вікторину не знайдено!');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            document.getElementById('quiz-title').textContent = quiz.name;
+            const questionsContainer = document.getElementById('questions-container');
+
+            quiz.questions.forEach((question, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.innerHTML = `
+                    <p><strong>Питання ${index + 1}:</strong> ${question.text}</p>
+                    ${question.options.map((option, optIndex) => `
+                        <input type="radio" name="q${index}" value="${optIndex}" id="q${index}opt${optIndex}" required>
+                        <label for="q${index}opt${optIndex}">${option}</label><br>
+                    `).join('')}
+                    <hr>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+
+            document.getElementById('quiz-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                calculateResults(quiz, quizId);
+            });
+        });
+
+        function calculateResults(quiz, quizId) {
+            let score = 0;
+            const userAnswers = [];
+
+            quiz.questions.forEach((question, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selectedOption) {
+                    const userAnswer = parseInt(selectedOption.value);
+                    userAnswers.push(userAnswer);
+                    
+                    if (userAnswer === question.correct) {
+                        score++;
+                    }
+                }
+            });
+
+            // Зберігаємо результати
+            const results = {
+                quizId: quizId,
+                quizName: quiz.name,
+                score: score,
+                total: quiz.questions.length,
+                userAnswers: userAnswers,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('lastResult', JSON.stringify(results));
+            window.location.href = 'results.html';
+        }
+    </script>
+</body>
+</html>
