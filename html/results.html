@@ -1,56 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Результати вікторини</title>
+    <title>Результати</title>
 </head>
 <body>
-    <h1>Результати вікторини</h1>
+    <h1>Результати</h1>
     
-    <nav>
-        <a href="index.html">Головна</a>
-    </nav>
+    <a href="index.html">Головна</a>
     
-    <div id="results-container">
-        <!-- Тут будуть відображатися результати -->
-    </div>
+    <div id="result"></div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const results = JSON.parse(localStorage.getItem('lastResult'));
-            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
-            
-            if (!results) {
-                document.getElementById('results-container').innerHTML = '<p>Результатів не знайдено!</p>';
-                return;
+        let result = localStorage.getItem('lastResult');
+        let quizzes = localStorage.getItem('quizzes');
+
+        if (result && quizzes) {
+            result = JSON.parse(result);
+            quizzes = JSON.parse(quizzes);
+            let quiz = quizzes[result.quizId];
+
+            let html = `<h2>${quiz.name}</h2>
+                <h3>Результат: ${result.score} з ${result.total}</h3>
+                <p>Відсоток: ${Math.round((result.score / result.total) * 100)}%</p>
+                
+                <h3>Відповіді:</h3>`;
+
+            for (let i = 0; i < quiz.questions.length; i++) {
+                let userAnswer = result.answers[i];
+                let correctAnswer = quiz.questions[i].correct;
+                let isCorrect = userAnswer === correctAnswer;
+                
+                html += `<div>
+                    <p><strong>${i + 1}. ${quiz.questions[i].text}</strong></p>
+                    <p style="color: ${isCorrect ? 'green' : 'red'}">
+                        Ваша відповідь: ${quiz.questions[i].options[userAnswer]}
+                    </p>`;
+                if (!isCorrect) {
+                    html += `<p style="color: green">
+                        Правильно: ${quiz.questions[i].options[correctAnswer]}
+                    </p>`;
+                }
+                html += '</div><br>';
             }
 
-            const quiz = quizzes[results.quizId];
-            const resultsContainer = document.getElementById('results-container');
-
-            resultsContainer.innerHTML = `
-                <h2>${quiz.name}</h2>
-                <h3>Ваш результат: ${results.score} з ${results.total}</h3>
-                <p>Відсоток правильних відповідей: ${Math.round((results.score / results.total) * 100)}%</p>
-                
-                <h3>Детальні результати:</h3>
-                ${quiz.questions.map((question, index) => {
-                    const userAnswer = results.userAnswers[index];
-                    const isCorrect = userAnswer === question.correct;
-                    return `
-                        <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ccc;">
-                            <p><strong>Питання ${index + 1}:</strong> ${question.text}</p>
-                            <p style="color: ${isCorrect ? 'green' : 'red'}">
-                                Ваша відповідь: ${question.options[userAnswer]} 
-                                ${isCorrect ? '✓' : '✗'}
-                            </p>
-                            ${!isCorrect ? `<p style="color: green;">Правильна відповідь: ${question.options[question.correct]}</p>` : ''}
-                        </div>
-                    `;
-                }).join('')}
-                
-                <a href="take-quiz.html?quizId=${results.quizId}">Пройти ще раз</a>
-            `;
-        });
+            document.getElementById('result').innerHTML = html;
+        }
     </script>
 </body>
 </html>

@@ -4,89 +4,64 @@
     <title>Проходження вікторини</title>
 </head>
 <body>
-    <h1 id="quiz-title">Вікторина</h1>
+    <h1 id="title">Вікторина</h1>
     
-    <nav>
-        <a href="index.html">Головна</a>
-    </nav>
+    <a href="index.html">Головна</a>
     
-    <form id="quiz-form">
-        <div id="questions-container">
-            <!-- Тут будуть відображатися питання -->
-        </div>
-        
-        <button type="submit">Завершити вікторину</button>
-    </form>
+    <div id="quiz"></div>
+    <button onclick="checkAnswers()">Завершити</button>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const quizId = urlParams.get('quizId');
+        let url = new URL(window.location.href);
+        let quizId = url.searchParams.get('id');
+        let quiz;
+
+        if (quizId === null) {
+            alert('Вікторину не знайдено!');
+            window.location.href = 'index.html';
+        }
+
+        let quizzes = localStorage.getItem('quizzes');
+        if (quizzes) {
+            quizzes = JSON.parse(quizzes);
+            quiz = quizzes[quizId];
+            document.getElementById('title').textContent = quiz.name;
             
-            if (quizId === null) {
-                alert('Вікторину не знайдено!');
-                window.location.href = 'index.html';
-                return;
+            let html = '';
+            for (let i = 0; i < quiz.questions.length; i++) {
+                html += `<div>
+                    <p><strong>${i + 1}. ${quiz.questions[i].text}</strong></p>`;
+                for (let j = 0; j < 4; j++) {
+                    html += `<input type="radio" name="q${i}" value="${j}">
+                    <label>${quiz.questions[i].options[j]}</label><br>`;
+                }
+                html += '</div><br>';
             }
+            document.getElementById('quiz').innerHTML = html;
+        }
 
-            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
-            const quiz = quizzes[quizId];
-
-            if (!quiz) {
-                alert('Вікторину не знайдено!');
-                window.location.href = 'index.html';
-                return;
-            }
-
-            document.getElementById('quiz-title').textContent = quiz.name;
-            const questionsContainer = document.getElementById('questions-container');
-
-            quiz.questions.forEach((question, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.innerHTML = `
-                    <p><strong>Питання ${index + 1}:</strong> ${question.text}</p>
-                    ${question.options.map((option, optIndex) => `
-                        <input type="radio" name="q${index}" value="${optIndex}" id="q${index}opt${optIndex}" required>
-                        <label for="q${index}opt${optIndex}">${option}</label><br>
-                    `).join('')}
-                    <hr>
-                `;
-                questionsContainer.appendChild(questionDiv);
-            });
-
-            document.getElementById('quiz-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                calculateResults(quiz, quizId);
-            });
-        });
-
-        function calculateResults(quiz, quizId) {
+        function checkAnswers() {
             let score = 0;
-            const userAnswers = [];
+            let userAnswers = [];
 
-            quiz.questions.forEach((question, index) => {
-                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selectedOption) {
-                    const userAnswer = parseInt(selectedOption.value);
-                    userAnswers.push(userAnswer);
-                    
-                    if (userAnswer === question.correct) {
+            for (let i = 0; i < quiz.questions.length; i++) {
+                let selected = document.querySelector(`input[name="q${i}"]:checked`);
+                if (selected) {
+                    let answer = parseInt(selected.value);
+                    userAnswers.push(answer);
+                    if (answer === quiz.questions[i].correct) {
                         score++;
                     }
                 }
-            });
+            }
 
-            // Зберігаємо результати
-            const results = {
+            let result = {
                 quizId: quizId,
-                quizName: quiz.name,
                 score: score,
                 total: quiz.questions.length,
-                userAnswers: userAnswers,
-                timestamp: new Date().toISOString()
+                answers: userAnswers
             };
-
-            localStorage.setItem('lastResult', JSON.stringify(results));
+            localStorage.setItem('lastResult', JSON.stringify(result));
             window.location.href = 'results.html';
         }
     </script>

@@ -6,104 +6,96 @@
 <body>
     <h1>Створити вікторину</h1>
     
-    <nav>
-        <a href="index.html">Головна</a> | 
-        <a href="create-quiz.html">Створити вікторину</a>
-    </nav>
+    <a href="index.html">Головна</a> | 
+    <a href="create-quiz.html">Створити вікторину</a>
     
-    <form id="quiz-form">
-        <div>
-            <label>Назва вікторини:</label>
-            <input type="text" id="quiz-name" required>
-        </div>
-        
-        <div>
-            <label>Опис вікторини:</label>
-            <textarea id="quiz-description"></textarea>
-        </div>
-        
-        <div id="questions-container">
-            <h3>Питання:</h3>
-            <!-- Тут будуть додаватися питання -->
-        </div>
-        
-        <button type="button" onclick="addQuestion()">Додати питання</button>
-        <br><br>
-        <button type="submit">Зберегти вікторину</button>
-    </form>
+    <div>
+        <label>Назва вікторини:</label>
+        <input type="text" id="quizName">
+    </div>
+    
+    <div id="questions">
+        <h3>Питання 1:</h3>
+        <input type="text" id="q1" placeholder="Питання">
+        <br>
+        <input type="text" id="a1" placeholder="Варіант 1">
+        <input type="text" id="a2" placeholder="Варіант 2">
+        <input type="text" id="a3" placeholder="Варіант 3">
+        <input type="text" id="a4" placeholder="Варіант 4">
+        <br>
+        <label>Правильна відповідь:</label>
+        <select id="correct1">
+            <option value="0">1</option>
+            <option value="1">2</option>
+            <option value="2">3</option>
+            <option value="3">4</option>
+        </select>
+    </div>
+    
+    <button onclick="addQuestion()">+ Додати питання</button>
+    <br><br>
+    <button onclick="saveQuiz()">Зберегти вікторину</button>
 
     <script>
-        let questionCount = 0;
+        let questionCount = 1;
 
         function addQuestion() {
             questionCount++;
-            const questionsContainer = document.getElementById('questions-container');
-            
-            const questionDiv = document.createElement('div');
-            questionDiv.innerHTML = `
-                <h4>Питання ${questionCount}</h4>
-                <input type="text" id="question-${questionCount}" placeholder="Текст питання" required>
+            let html = `<h3>Питання ${questionCount}:</h3>
+                <input type="text" id="q${questionCount}" placeholder="Питання">
                 <br>
-                <input type="text" id="option1-${questionCount}" placeholder="Варіант 1" required>
-                <input type="text" id="option2-${questionCount}" placeholder="Варіант 2" required>
-                <input type="text" id="option3-${questionCount}" placeholder="Варіант 3" required>
-                <input type="text" id="option4-${questionCount}" placeholder="Варіант 4" required>
+                <input type="text" id="a${questionCount}1" placeholder="Варіант 1">
+                <input type="text" id="a${questionCount}2" placeholder="Варіант 2">
+                <input type="text" id="a${questionCount}3" placeholder="Варіант 3">
+                <input type="text" id="a${questionCount}4" placeholder="Варіант 4">
                 <br>
                 <label>Правильна відповідь:</label>
-                <select id="correct-${questionCount}">
-                    <option value="1">Варіант 1</option>
-                    <option value="2">Варіант 2</option>
-                    <option value="3">Варіант 3</option>
-                    <option value="4">Варіант 4</option>
-                </select>
-                <hr>
-            `;
-            questionsContainer.appendChild(questionDiv);
+                <select id="correct${questionCount}">
+                    <option value="0">1</option>
+                    <option value="1">2</option>
+                    <option value="2">3</option>
+                    <option value="3">4</option>
+                </select>`;
+            document.getElementById('questions').innerHTML += html;
         }
 
-        document.getElementById('quiz-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            saveQuiz();
-        });
-
         function saveQuiz() {
-            if (questionCount === 0) {
-                alert('Додайте хоча б одне питання!');
+            let quizName = document.getElementById('quizName').value;
+            if (!quizName) {
+                alert('Введіть назву вікторини!');
                 return;
             }
 
-            const quiz = {
-                name: document.getElementById('quiz-name').value,
-                description: document.getElementById('quiz-description').value,
+            let quiz = {
+                name: quizName,
                 questions: []
             };
 
-            // Збираємо всі питання
             for (let i = 1; i <= questionCount; i++) {
-                const question = {
-                    text: document.getElementById(`question-${i}`).value,
-                    options: [
-                        document.getElementById(`option1-${i}`).value,
-                        document.getElementById(`option2-${i}`).value,
-                        document.getElementById(`option3-${i}`).value,
-                        document.getElementById(`option4-${i}`).value
-                    ],
-                    correct: parseInt(document.getElementById(`correct-${i}`).value) - 1
-                };
-                quiz.questions.push(question);
+                let question = document.getElementById('q' + i).value;
+                let answers = [
+                    document.getElementById('a' + i + '1').value,
+                    document.getElementById('a' + i + '2').value,
+                    document.getElementById('a' + i + '3').value,
+                    document.getElementById('a' + i + '4').value
+                ];
+                let correct = document.getElementById('correct' + i).value;
+
+                quiz.questions.push({
+                    text: question,
+                    options: answers,
+                    correct: parseInt(correct)
+                });
             }
 
-            // Зберігаємо в localStorage
-            const quizzes = JSON.parse(localStorage.getItem('quizzes')) || [];
+            let quizzes = localStorage.getItem('quizzes');
+            quizzes = quizzes ? JSON.parse(quizzes) : [];
             quizzes.push(quiz);
             localStorage.setItem('quizzes', JSON.stringify(quizzes));
 
             alert('Вікторину збережено!');
             window.location.href = 'index.html';
         }
-
-        // Додаємо перше питання автоматично
-        document.addEventListener('DOMContentLoaded', addQuestion);
     </script>
 </body>
 </html>
