@@ -18,10 +18,10 @@
         <h3>Питання 1:</h3>
         <input type="text" id="q1" placeholder="Питання">
         <br>
-        <input type="text" id="a1" placeholder="Варіант 1">
-        <input type="text" id="a2" placeholder="Варіант 2">
-        <input type="text" id="a3" placeholder="Варіант 3">
-        <input type="text" id="a4" placeholder="Варіант 4">
+        <input type="text" id="a1_1" placeholder="Варіант 1">
+        <input type="text" id="a1_2" placeholder="Варіант 2">
+        <input type="text" id="a1_3" placeholder="Варіант 3">
+        <input type="text" id="a1_4" placeholder="Варіант 4">
         <br>
         <label>Правильна відповідь:</label>
         <select id="correct1">
@@ -44,10 +44,10 @@
             let html = `<h3>Питання ${questionCount}:</h3>
                 <input type="text" id="q${questionCount}" placeholder="Питання">
                 <br>
-                <input type="text" id="a${questionCount}1" placeholder="Варіант 1">
-                <input type="text" id="a${questionCount}2" placeholder="Варіант 2">
-                <input type="text" id="a${questionCount}3" placeholder="Варіант 3">
-                <input type="text" id="a${questionCount}4" placeholder="Варіант 4">
+                <input type="text" id="a${questionCount}_1" placeholder="Варіант 1">
+                <input type="text" id="a${questionCount}_2" placeholder="Варіант 2">
+                <input type="text" id="a${questionCount}_3" placeholder="Варіант 3">
+                <input type="text" id="a${questionCount}_4" placeholder="Варіант 4">
                 <br>
                 <label>Правильна відповідь:</label>
                 <select id="correct${questionCount}">
@@ -71,14 +71,20 @@
                 questions: []
             };
 
+
             for (let i = 1; i <= questionCount; i++) {
                 let question = document.getElementById('q' + i).value;
-                let answers = [
-                    document.getElementById('a' + i + '1').value,
-                    document.getElementById('a' + i + '2').value,
-                    document.getElementById('a' + i + '3').value,
-                    document.getElementById('a' + i + '4').value
-                ];
+                let answer1 = document.getElementById('a' + i + '_1').value;
+                let answer2 = document.getElementById('a' + i + '_2').value;
+                let answer3 = document.getElementById('a' + i + '_3').value;
+                let answer4 = document.getElementById('a' + i + '_4').value;
+
+                if (!question || !answer1 || !answer2 || !answer3 || !answer4) {
+                    alert(`Заповніть всі поля для питання ${i}!`);
+                    return;
+                }
+
+                let answers = [answer1, answer2, answer3, answer4];
                 let correct = document.getElementById('correct' + i).value;
 
                 quiz.questions.push({
