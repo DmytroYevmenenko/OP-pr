@@ -22,11 +22,20 @@
                     html += `<div>
                         <h3>${quizzes[i].name}</h3>
                         <a href="take-quiz.html?id=${i}">Почати</a>
+                        <button onclick="deleteQuiz(${i})">Видалити</button>
                     </div>`;
                 }
                 document.getElementById('quizList').innerHTML = html;
             }
         }
+
+        function deleteQuiz(index) {
+            let quizzes = JSON.parse(localStorage.getItem('quizzes'));
+            quizzes.splice(index, 1);
+            localStorage.setItem('quizzes', JSON.stringify(quizzes));
+            loadQuizzes();
+        }
+
         loadQuizzes();
     </script>
 </body>
