@@ -2,13 +2,18 @@
 <html>
 <head>
     <title>Результати</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Результати</h1>
-    
-    <a href="index.html">Головна</a>
-    
-    <div id="result"></div>
+    <div class="container">
+        <h1>Результати</h1>
+        
+        <nav>
+            <a href="index.html">Головна</a>
+        </nav>
+        
+        <div id="result"></div>
+    </div>
 
     <script>
         let result = localStorage.getItem('lastResult');
@@ -19,31 +24,36 @@
             quizzes = JSON.parse(quizzes);
             let quiz = quizzes[result.quizId];
 
-            let html = `<h2>${quiz.name}</h2>
-                <h3>Результат: ${result.score} з ${result.total}</h3>
+            let html = `<div class="result-info">
+                <h2>${quiz.name}</h2>
+                <div class="score">${result.score} / ${result.total}</div>
                 <p>Відсоток: ${Math.round((result.score / result.total) * 100)}%</p>
-                
-                <h3>Відповіді:</h3>`;
+            </div>
+            
+            <div class="answer-review">
+                <h3>Детальний огляд відповідей:</h3>`;
 
             for (let i = 0; i < quiz.questions.length; i++) {
                 let userAnswer = result.answers[i];
                 let correctAnswer = quiz.questions[i].correct;
                 let isCorrect = userAnswer === correctAnswer;
                 
-                html += `<div>
+                html += `<div class="answer-item ${isCorrect ? 'correct-answer' : 'wrong-answer'}">
                     <p><strong>${i + 1}. ${quiz.questions[i].text}</strong></p>
-                    <p style="color: ${isCorrect ? 'green' : 'red'}">
-                        Ваша відповідь: ${quiz.questions[i].options[userAnswer]}
+                    <p class="${isCorrect ? 'correct-answer' : 'wrong-answer'}">
+                        Ваша відповідь: ${userAnswer !== null ? quiz.questions[i].options[userAnswer] : 'Не відповіли'}
                     </p>`;
                 if (!isCorrect) {
-                    html += `<p style="color: green">
-                        Правильно: ${quiz.questions[i].options[correctAnswer]}
+                    html += `<p class="correct-answer">
+                        Правильна відповідь: ${quiz.questions[i].options[correctAnswer]}
                     </p>`;
                 }
-                html += '</div><br>';
+                html += '</div>';
             }
 
             document.getElementById('result').innerHTML = html;
+        } else {
+            document.getElementById('result').innerHTML = '<p class="text-center">Результатів не знайдено</p>';
         }
     </script>
 </body>

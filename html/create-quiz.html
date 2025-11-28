@@ -1,61 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Створити </title>
+    <title>Створити вікторину</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Створити вікторину</h1>
-    
-    <a href="index.html">Головна</a> | 
-    <a href="create-quiz.html">Створити вікторину</a>
-    
-    <div>
-        <label>Назва вікторини:</label>
-        <input type="text" id="quizName">
+    <div class="container">
+        <h1>Створити вікторину</h1>
+        
+        <nav>
+            <a href="index.html">Головна</a>
+            <a href="create-quiz.html">Створити вікторину</a>
+        </nav>
+        
+        <div class="form-group">
+            <label>Назва вікторини:</label>
+            <input type="text" id="quizName" placeholder="Введіть назву вікторини">
+        </div>
+        
+        <div id="questions">
+            <div class="question-block">
+                <h3>Питання 1:</h3>
+                <input type="text" id="q1" placeholder="Питання">
+                <div class="answers-container">
+                    <input type="text" id="a1_1" placeholder="Варіант 1">
+                    <input type="text" id="a1_2" placeholder="Варіант 2">
+                    <input type="text" id="a1_3" placeholder="Варіант 3">
+                    <input type="text" id="a1_4" placeholder="Варіант 4">
+                </div>
+                <div class="form-group">
+                    <label>Правильна відповідь:</label>
+                    <select id="correct1">
+                        <option value="0">Варіант 1</option>
+                        <option value="1">Варіант 2</option>
+                        <option value="2">Варіант 3</option>
+                        <option value="3">Варіант 4</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center">
+            <button onclick="addQuestion()" class="btn btn-primary">+ Додати питання</button>
+            <br><br>
+            <button onclick="saveQuiz()" class="btn btn-success">Зберегти вікторину</button>
+        </div>
     </div>
-    
-    <div id="questions">
-        <h3>Питання 1:</h3>
-        <input type="text" id="q1" placeholder="Питання">
-        <br>
-        <input type="text" id="a1_1" placeholder="Варіант 1">
-        <input type="text" id="a1_2" placeholder="Варіант 2">
-        <input type="text" id="a1_3" placeholder="Варіант 3">
-        <input type="text" id="a1_4" placeholder="Варіант 4">
-        <br>
-        <label>Правильна відповідь:</label>
-        <select id="correct1">
-            <option value="0">1</option>
-            <option value="1">2</option>
-            <option value="2">3</option>
-            <option value="3">4</option>
-        </select>
-    </div>
-    
-    <button onclick="addQuestion()">+ Додати питання</button>
-    <br><br>
-    <button onclick="saveQuiz()">Зберегти вікторину</button>
 
     <script>
         let questionCount = 1;
 
         function addQuestion() {
             questionCount++;
-            let html = `<h3>Питання ${questionCount}:</h3>
+            let html = `<div class="question-block">
+                <h3>Питання ${questionCount}:</h3>
                 <input type="text" id="q${questionCount}" placeholder="Питання">
-                <br>
-                <input type="text" id="a${questionCount}_1" placeholder="Варіант 1">
-                <input type="text" id="a${questionCount}_2" placeholder="Варіант 2">
-                <input type="text" id="a${questionCount}_3" placeholder="Варіант 3">
-                <input type="text" id="a${questionCount}_4" placeholder="Варіант 4">
-                <br>
-                <label>Правильна відповідь:</label>
-                <select id="correct${questionCount}">
-                    <option value="0">1</option>
-                    <option value="1">2</option>
-                    <option value="2">3</option>
-                    <option value="3">4</option>
-                </select>`;
+                <div class="answers-container">
+                    <input type="text" id="a${questionCount}_1" placeholder="Варіант 1">
+                    <input type="text" id="a${questionCount}_2" placeholder="Варіант 2">
+                    <input type="text" id="a${questionCount}_3" placeholder="Варіант 3">
+                    <input type="text" id="a${questionCount}_4" placeholder="Варіант 4">
+                </div>
+                <div class="form-group">
+                    <label>Правильна відповідь:</label>
+                    <select id="correct${questionCount}">
+                        <option value="0">Варіант 1</option>
+                        <option value="1">Варіант 2</option>
+                        <option value="2">Варіант 3</option>
+                        <option value="3">Варіант 4</option>
+                    </select>
+                </div>
+            </div>`;
             document.getElementById('questions').innerHTML += html;
         }
 
@@ -70,7 +85,6 @@
                 name: quizName,
                 questions: []
             };
-
 
             for (let i = 1; i <= questionCount; i++) {
                 let question = document.getElementById('q' + i).value;
@@ -104,4 +118,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

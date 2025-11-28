@@ -2,14 +2,21 @@
 <html>
 <head>
     <title>Проходження вікторини</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1 id="title">Вікторина</h1>
-    
-    <a href="index.html">Головна</a>
-    
-    <div id="quiz"></div>
-    <button onclick="checkAnswers()">Завершити</button>
+    <div class="container">
+        <h1 id="title">Вікторина</h1>
+        
+        <nav>
+            <a href="index.html">Головна</a>
+        </nav>
+        
+        <div id="quiz"></div>
+        <div class="text-center">
+            <button onclick="checkAnswers()" class="btn btn-success">Завершити</button>
+        </div>
+    </div>
 
     <script>
         let url = new URL(window.location.href);
@@ -29,13 +36,16 @@
             
             let html = '';
             for (let i = 0; i < quiz.questions.length; i++) {
-                html += `<div>
-                    <p><strong>${i + 1}. ${quiz.questions[i].text}</strong></p>`;
+                html += `<div class="question-block">
+                    <p><strong>${i + 1}. ${quiz.questions[i].text}</strong></p>
+                    <div class="answers-container">`;
                 for (let j = 0; j < 4; j++) {
-                    html += `<input type="radio" name="q${i}" value="${j}">
-                    <label>${quiz.questions[i].options[j]}</label><br>`;
+                    html += `<div class="answer-option">
+                        <input type="radio" name="q${i}" value="${j}" id="q${i}_a${j}">
+                        <label for="q${i}_a${j}">${quiz.questions[i].options[j]}</label>
+                    </div>`;
                 }
-                html += '</div><br>';
+                html += '</div></div>';
             }
             document.getElementById('quiz').innerHTML = html;
         }
@@ -52,6 +62,8 @@
                     if (answer === quiz.questions[i].correct) {
                         score++;
                     }
+                } else {
+                    userAnswers.push(null);
                 }
             }
 

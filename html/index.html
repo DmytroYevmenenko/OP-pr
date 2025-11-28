@@ -2,15 +2,20 @@
 <html>
 <head>
     <title>Головна - Вікторина</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Вікторина</h1>
-    
-    <a href="index.html">Головна</a> | 
-    <a href="create-quiz.html">Створити вікторину</a>
-    
-    <h2>Вікторини:</h2>
-    <div id="quizList"></div>
+    <div class="container">
+        <h1>Вікторина</h1>
+        
+        <nav>
+            <a href="index.html">Головна</a>
+            <a href="create-quiz.html">Створити вікторину</a>
+        </nav>
+        
+        <h2>Вікторини:</h2>
+        <div id="quizList"></div>
+    </div>
 
     <script>
         function loadQuizzes() {
@@ -19,21 +24,30 @@
                 quizzes = JSON.parse(quizzes);
                 let html = '';
                 for (let i = 0; i < quizzes.length; i++) {
-                    html += `<div>
-                        <h3>${quizzes[i].name}</h3>
-                        <a href="take-quiz.html?id=${i}">Почати</a>
-                        <button onclick="deleteQuiz(${i})">Видалити</button>
+                    html += `<div class="quiz-item">
+                        <div>
+                            <h3>${quizzes[i].name}</h3>
+                            <p>Кількість питань: ${quizzes[i].questions.length}</p>
+                        </div>
+                        <div class="quiz-actions">
+                            <a href="take-quiz.html?id=${i}" class="btn btn-primary">Почати</a>
+                            <button onclick="deleteQuiz(${i})" class="btn btn-danger">Видалити</button>
+                        </div>
                     </div>`;
                 }
                 document.getElementById('quizList').innerHTML = html;
+            } else {
+                document.getElementById('quizList').innerHTML = '<p class="text-center">Ще немає створених вікторин</p>';
             }
         }
 
         function deleteQuiz(index) {
-            let quizzes = JSON.parse(localStorage.getItem('quizzes'));
-            quizzes.splice(index, 1);
-            localStorage.setItem('quizzes', JSON.stringify(quizzes));
-            loadQuizzes();
+            if (confirm('Ви впевнені, що хочете видалити цю вікторину?')) {
+                let quizzes = JSON.parse(localStorage.getItem('quizzes'));
+                quizzes.splice(index, 1);
+                localStorage.setItem('quizzes', JSON.stringify(quizzes));
+                loadQuizzes();
+            }
         }
 
         loadQuizzes();
